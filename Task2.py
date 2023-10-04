@@ -1,65 +1,64 @@
 import tkinter as tk
+from tkinter import ttk
+
+# Function to handle button clicks
+def button_click(value):
+    current = entry.get()
+    entry.delete(0, tk.END)
+    entry.insert(tk.END, current + str(value))
+
+# Function to clear the entry
+def clear():
+    entry.delete(0, tk.END)
 
 # Function to perform arithmetic operations
 def calculate():
-    num1 = float(entry1.get())
-    num2 = float(entry2.get())
-    operation = operation_var.get()
-    
-    if operation == "Addition":
-        result = num1 + num2
-    elif operation == "Subtraction":
-        result = num1 - num2
-    elif operation == "Multiplication":
-        result = num1 * num2
-    elif operation == "Division":
-        if num2 == 0:
-            result_label.config(text="Cannot divide by zero")
-            return
-        result = num1 / num2
-    else:
-        result_label.config(text="Invalid operation")
-        return
-    
-    result_label.config(text=f"Result: {result}")
+    expression = entry.get()
+    try:
+        result = eval(expression)
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, str(result))
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, "Error")
 
 # Create the main window
 root = tk.Tk()
-root.title("Simple Calculator")
+root.title("Stylish Calculator")
 
-# Set the initial window size
-root.geometry("400x300")  # Width x Height
+# Set a stylish theme
+style = ttk.Style()
+style.theme_use('clam')
 
-# Label and Entry for the first number
-label1 = tk.Label(root, text="Enter the first number:")
-label1.pack()
-entry1 = tk.Entry(root)
-entry1.pack()
+# Entry field for input
+entry = tk.Entry(root, font=("Helvetica", 24))
+entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10, ipadx=10, ipady=10)
 
-# Label and Entry for the second number
-label2 = tk.Label(root, text="Enter the second number:")
-label2.pack()
-entry2 = tk.Entry(root)
-entry2.pack()
+# Define button labels
+button_labels = [
+    '7', '8', '9', '/',
+    '4', '5', '6', '*',
+    '1', '2', '3', '-',
+    '0', '.', '=', '+', 'C'
+]
 
-# Radio buttons for selecting operation
-operation_var = tk.StringVar()
-operation_var.set("Addition")  # Default selection
-operations = ["Addition", "Subtraction", "Multiplication", "Division"]
-operation_label = tk.Label(root, text="Select operation:")
-operation_label.pack()
+# Create and place buttons
+row_val = 1
+col_val = 0
 
-for operation in operations:
-    radio_button = tk.Radiobutton(root, text=operation, variable=operation_var, value=operation)
-    radio_button.pack()
+for label in button_labels:
+    if label == 'C':
+        ttk.Button(root, text=label, style='Calculator.TButton', command=clear).grid(row=row_val, column=col_val, padx=5, pady=5, ipadx=10, ipady=10)
+    else:
+        ttk.Button(root, text=label, style='Calculator.TButton', command=lambda label=label: button_click(label) if label != '=' else calculate()).grid(row=row_val, column=col_val, padx=5, pady=5, ipadx=10, ipady=10)
+    
+    col_val += 1
+    if col_val > 3:
+        col_val = 0
+        row_val += 1
 
-# Calculate button
-calculate_button = tk.Button(root, text="Calculate", command=calculate)
-calculate_button.pack()
-
-# Label to display the result
-result_label = tk.Label(root, text="")
-result_label.pack()
+# Configure button style
+style.configure('Calculator.TButton', font=("Helvetica", 18))
 
 # Run the GUI main loop
 root.mainloop()
